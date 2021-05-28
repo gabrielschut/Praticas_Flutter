@@ -1,15 +1,17 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:loja_exemplo/providers/product.dart';
 import 'package:loja_exemplo/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:loja_exemplo/providers/cart.dart';
 
+
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = Provider.of<Product>(context , listen: false);
     final Cart cart = Provider.of<Cart>(context , listen: false);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -45,6 +47,21 @@ class ProductItem extends StatelessWidget {
             color: Theme.of(context).accentColor,
             onPressed: () {
               cart.addItem(product);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Produto adicionado com sucesso!'),
+                  duration: Duration(seconds: 2),
+                  backgroundColor: Colors.blue[200],
+                  action: SnackBarAction(
+                    label: 'Undo',
+                    textColor: Colors.pink,
+                    onPressed: (){
+                      cart.removeSingleItem(product.id);
+                    },
+                  ),
+                ),
+              );
             },
           ),
         ),
