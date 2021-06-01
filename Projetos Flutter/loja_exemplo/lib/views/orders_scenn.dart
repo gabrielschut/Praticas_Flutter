@@ -11,7 +11,7 @@ class OrdersScrenn extends StatelessWidget {
   Widget build(BuildContext context) {
     final Orders orders = Provider.of(context);
     return Scaffold(
-      backgroundColor: Colors.yellow[50],
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
         title: Text('Meus Pedidos'),
       ),

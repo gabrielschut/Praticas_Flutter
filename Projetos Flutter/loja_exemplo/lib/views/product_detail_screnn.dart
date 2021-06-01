@@ -8,6 +8,7 @@ class ProductDetailScrenn extends StatelessWidget {
   Widget build(BuildContext context) {
   final Product product = ModalRoute.of(context).settings.arguments as Product;
     return Scaffold(
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
         title: Text(product.title),
       ),

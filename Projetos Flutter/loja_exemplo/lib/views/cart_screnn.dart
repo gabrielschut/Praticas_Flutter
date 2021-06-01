@@ -11,7 +11,7 @@ class CartScrenn extends StatelessWidget {
     final Cart cart = Provider.of(context);
     final cartItems = cart.items.values.toList();
     return Scaffold(
-      backgroundColor: Colors.yellow[50],
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
         title: Text('Carrinho'),
       ),

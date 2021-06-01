@@ -7,7 +7,7 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 200,
-      color: Colors.yellow[50],
+      color: Colors.blue[50],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -35,6 +35,17 @@ class AppDrawer extends StatelessWidget {
               Navigator.pushReplacementNamed(context, AppRoutes.ORDERS);
             },
           ),
+          Divider(),
+          ListTile(
+             leading: Icon(Icons.edit,
+               color: Theme.of(context).primaryColor,
+             ),
+             title: Text('Gerenciar Produtos'),
+             onTap: () {
+               Navigator.pushReplacementNamed(context, AppRoutes.PRODUCTS);
+               },
+          ),
+          Divider(),
         ],
       ),
     );

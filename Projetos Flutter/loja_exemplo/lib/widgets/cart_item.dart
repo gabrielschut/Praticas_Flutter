@@ -30,9 +30,48 @@ class CartItemWidget extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (_){
-        Provider.of<Cart>(context, listen: false).
-        removeItem(cartItem.productId);
+      confirmDismiss: (_) {
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(
+              'Aviso!',
+              style: TextStyle(
+                color: Theme.of(context).errorColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: Padding(
+              padding: const EdgeInsets.only(
+                left: 20,
+              ),
+              child: Text('Deseja excluir o produto ?'),
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    child: Text('Sim'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop(true);
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Não'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop(false);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+      onDismissed: (_) {
+        Provider.of<Cart>(context, listen: false)
+            .removeItem(cartItem.productId);
       },
       child: Card(
         margin: EdgeInsets.symmetric(
@@ -50,7 +89,7 @@ class CartItemWidget extends StatelessWidget {
                 ),
               ),
             ),
-              title: Text(cartItem.title),
+            title: Text(cartItem.title),
             subtitle: Text('R\$ ${cartItem.price * cartItem.quantity}'),
             trailing: Text('${cartItem.quantity}x'),
           ),

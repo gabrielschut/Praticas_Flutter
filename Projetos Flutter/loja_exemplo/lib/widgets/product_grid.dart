@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:loja_exemplo/providers/product_provider.dart';
-import 'package:loja_exemplo/widgets/product_item.dart';
+import 'package:loja_exemplo/providers/product.dart';
+import 'package:loja_exemplo/widgets/product_grid_item.dart';
 import 'package:provider/provider.dart';
 
 class ProductGrid extends StatelessWidget {
@@ -19,7 +19,7 @@ class ProductGrid extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
         value: products[index],
-        child: ProductItem(),
+        child: ProductGridItem(),
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

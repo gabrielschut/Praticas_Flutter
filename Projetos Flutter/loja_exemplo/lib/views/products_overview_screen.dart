@@ -25,7 +25,7 @@ class _ProdutsOverviweScrennState extends State<ProdutsOverviweScrenn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow[50],
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
         title: Center(
           child: Text(
