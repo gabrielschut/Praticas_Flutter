@@ -6,6 +6,12 @@ import 'package:loja_exemplo/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
 class ProductScenn extends StatelessWidget {
+
+  Future<void> _refreshProduct(BuildContext context) async {
+    Provider.of<Products>(context, listen: false ).loadProducts();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
@@ -31,15 +37,18 @@ class ProductScenn extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: productsData.itemsCount,
-          itemBuilder: (context, i) => Column(
-            children: [
-              ProductItem(products[i]),
-              Divider(),
-            ],
+      body: RefreshIndicator(
+        onRefresh: () => _refreshProduct(context),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: productsData.itemsCount,
+            itemBuilder: (context, i) => Column(
+              children: [
+                ProductItem(products[i]),
+                Divider(),
+              ],
+            ),
           ),
         ),
       ),

@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.Cart: (ctx) => CartScrenn(),
           AppRoutes.ORDERS: (ctx) => OrdersScrenn(),
           AppRoutes.PRODUCTS: (ctx) => ProductScenn(),
-          AppRoutes.PRODUCTFORM: (ctx) => ProductFormScrenn(),
+          AppRoutes.PRODUCTFORM: (ctx) => ProductFormScreen(),
         },
       ),
     );

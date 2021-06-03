@@ -5,6 +5,44 @@ import 'package:loja_exemplo/widgets/cart_item.dart';
 import 'package:loja_exemplo/providers/cart.dart';
 import 'package:loja_exemplo/providers/orders.dart';
 
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? CircularProgressIndicator()
+        : TextButton(
+            child: Text('COMPRAR'),
+            onPressed: widget.cart.totalAmount == 0
+                ? null
+                : () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    await Provider.of<Orders>(context, listen: false)
+                        .addOrder(widget.cart);
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    widget.cart.clear();
+                  },
+          );
+  }
+}
+
 class CartScrenn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -43,14 +81,8 @@ class CartScrenn extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  TextButton(
-                    child: Text('COMPRAR'),
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false)
-                          .addOrder(cart);
-                      cart.clear();
-                    },
-                  ),
+                  Spacer(),
+                OrderButton(cart : cart),
                 ],
               ),
             ),

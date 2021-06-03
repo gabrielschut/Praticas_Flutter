@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loja_exemplo/providers/product.dart';
 import 'package:provider/provider.dart';
 
 import 'package:loja_exemplo/providers/cart.dart';
@@ -21,17 +22,29 @@ class ProdutsOverviweScrenn extends StatefulWidget {
 
 class _ProdutsOverviweScrennState extends State<ProdutsOverviweScrenn> {
   bool _showFavoriteOnly = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    //carrega produtos do firebase
+    Provider.of<Products>(context , listen: false).loadProducts()
+        .then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[50],
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            '     Minha loja',
-            textAlign: TextAlign.center,
-          ),
+        title: Text(
+          '     Minha loja',
+          textAlign: TextAlign.center,
         ),
         actions: <Widget>[
           PopupMenuButton(
@@ -87,7 +100,15 @@ class _ProdutsOverviweScrennState extends State<ProdutsOverviweScrenn> {
           ),
         ],
       ),
-      body: ProductGrid(_showFavoriteOnly),
+      body: _isLoading ? Container(
+        margin: EdgeInsets.all(50),
+        child: Center(
+          child: LinearProgressIndicator(
+            color: Colors.blueAccent,
+          ),
+        ),
+      )
+          : ProductGrid(_showFavoriteOnly),
       drawer: AppDrawer()
       ,
     );

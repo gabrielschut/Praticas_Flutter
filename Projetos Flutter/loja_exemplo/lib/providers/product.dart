@@ -1,8 +1,7 @@
-
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:loja_exemplo/data/dummy_data.dart';
+import 'package:http/http.dart' as http;
+import 'package:loja_exemplo/utils/cosntants.dart';
 
 class Product with ChangeNotifier{
   final String id;
@@ -18,18 +17,41 @@ class Product with ChangeNotifier{
     @required this.description,
     @required this.price,
     @required this.imageUrl,
-    this.isFavorite,
+    this.isFavorite = false,
   });
 
-  void toggleFavorite(){
+  void _toggleFavorite(){
     this.isFavorite = !isFavorite;
     notifyListeners();
+  }
+
+  Future<void> toggleFavorite() async{
+    _toggleFavorite();
+    try{
+      final url ='${Constants.BASE_API_URL}/products';
+      final response = await http.patch(
+          url,
+          body: json.encode({
+            'IsFavorite' : isFavorite = !this.isFavorite,
+          })
+      );
+
+      if(response.statusCode >= 400){
+        _toggleFavorite();
+      }
+    }catch(error){
+      _toggleFavorite();
+    }
+
+
+
   }
 
 }
 
 class Products with ChangeNotifier{
-  List<Product> _items = DUMMY_PRODUCTS;
+  final _baseUrl = '${Constants.BASE_API_URL}/products';
+  List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -37,34 +59,85 @@ class Products with ChangeNotifier{
    return items.where((prod) => prod.isFavorite).toList();
   }
 
-  void addProduct(Product newProduct){
-    _items.add(Product(
-      id: Random().nextDouble().toString(),
-      title: newProduct.title,
-      description: newProduct.description,
-      price: newProduct.price,
-      imageUrl: newProduct.imageUrl,
-    ));
-    notifyListeners();
+  Future<void> addProduct(Product newProduct) async{
+    final response = await
+    http.post("$_baseUrl.json",
+    body: json.encode({
+      'title' : newProduct.title,
+      'price' : newProduct.price,
+      'description' : newProduct.description,
+      'imageUrl' : newProduct.imageUrl,
+      'isFavorite' : newProduct.isFavorite = false,
+    }),
+    );
+        _items.add(Product(
+          id: json.decode(response.body)['name'],
+          title: newProduct.title,
+          description: newProduct.description,
+          price: newProduct.price,
+          imageUrl: newProduct.imageUrl,
+          isFavorite: newProduct.isFavorite,
+        ));
+        notifyListeners();
   }
 
-  void updateProduct(Product product){
+  Future<void> loadProducts() async {
+    final response = await http.get("$_baseUrl.json");
+    Map<String, dynamic> data= json.decode(response.body);
+
+    _items.clear();
+
+    data.forEach((productId, productData) {
+      if(data != null){
+        _items.add(Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            price: productData['price'],
+            imageUrl: productData['imageUrl'],
+            isFavorite: productData['isFavorite']
+        ));
+        notifyListeners();
+      }
+      return Future.value();
+      });
+
+
+  }
+
+  Future<void> updateProduct(Product product) async{
     if(product.id == null || product == null){
-      return;
     }
 
     final index = _items.indexWhere((prod) => prod.id == product.id);
     if(index >=0 ){
+      await http.patch("$_baseUrl/${product.id}.json",
+      body: jsonEncode({
+        'title' : product.title,
+        'price' : product.price,
+        'description' : product.description,
+        'imageUrl' : product.imageUrl,
+      }),
+      );
       _items[index] = product;
       notifyListeners();
     }
   }
 
-  void deleteProduct(String id){
+  Future<void> deleteProduct(String id) async {
     final index = _items.indexWhere((prod) => prod.id == id);
     if(index >= 0){
-      _items.removeWhere((prod) => prod.id == id);
-      notifyListeners();
+      final product = _items[index];
+
+      final response = await http.delete("$_baseUrl/${product.id}.json");
+
+      if(response.statusCode > 400){
+        _items.insert(index, product);
+        notifyListeners();
+      }else{
+        _items.remove(product);
+        notifyListeners();
+      }
     }
   }
 

@@ -1,16 +1,18 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loja_exemplo/providers/product.dart';
-import 'package:loja_exemplo/utils/app_routes.dart';
 import 'package:provider/provider.dart';
-import 'package:loja_exemplo/providers/cart.dart';
-
+import '../providers/product.dart';
+import '../providers/cart.dart';
+import '../utils/app_routes.dart';
+import 'package:loja_exemplo/providers/product.dart';
 
 class ProductGridItem extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    final Product product = Provider.of<Product>(context , listen: false);
-    final Cart cart = Provider.of<Cart>(context , listen: false);
+    final Product product = Provider.of<Product>(context, listen: false);
+    final Cart cart = Provider.of<Cart>(context, listen: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -29,24 +31,33 @@ class ProductGridItem extends StatelessWidget {
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: Consumer<Product>(
-            builder: (ctx, product, _) => IconButton(
-              icon: Icon(product.isFavorite
-                  ? Icons.favorite
-                  : Icons.favorite_border_sharp),
-              onPressed: () => product.toggleFavorite(),
-              color: Theme.of(context).accentColor,
-            ),
+          leading: SizedBox.fromSize(
+            size: Size(25,55),
+            child: Consumer<Product>(
+              builder: (ctx, product,_){
+                return IconButton(
+                icon: Icon(
+                    product.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border_sharp ),
+                color: Colors.redAccent,
+                onPressed: () {
+                  product.toggleFavorite();
+                },
+              );
+              }),
           ),
           title: Text(
             product.title,
             textAlign: TextAlign.center,
+            maxLines: 1,
           ),
           trailing: IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_cart,
+            size: 15,
+            ),
             color: Theme.of(context).accentColor,
             onPressed: () {
-              cart.addItem(product);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -62,6 +73,7 @@ class ProductGridItem extends StatelessWidget {
                   ),
                 ),
               );
+              cart.addItem(product);
             },
           ),
         ),
@@ -69,3 +81,7 @@ class ProductGridItem extends StatelessWidget {
     );
   }
 }
+
+
+
+
