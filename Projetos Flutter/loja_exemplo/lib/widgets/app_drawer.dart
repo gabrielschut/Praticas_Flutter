@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loja_exemplo/providers/auth.dart';
 
 import 'package:loja_exemplo/utils/app_routes.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -22,7 +24,7 @@ class AppDrawer extends StatelessWidget {
             ),
             title: Text('Loja'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, AppRoutes.HOME);
+              Navigator.pushReplacementNamed(context, AppRoutes.PRODUCT_OVERVIEW);
             },
           ),
           Divider(),
@@ -46,6 +48,15 @@ class AppDrawer extends StatelessWidget {
                },
           ),
           Divider(),
+          ListTile(
+            leading: Icon(Icons.exit_to_app,
+              color: Theme.of(context).primaryColor,
+            ),
+            title: Text('Sair'),
+            onTap: () {
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+          ),
         ],
       ),
     );

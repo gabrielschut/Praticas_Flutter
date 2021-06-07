@@ -15,12 +15,14 @@ enum FilterOptions {
   All,
 }
 
-class ProdutsOverviweScrenn extends StatefulWidget {
+class ProdutsOverviewScrenn extends StatefulWidget {
+  ProdutsOverviewScrenn();
+
   @override
   _ProdutsOverviweScrennState createState() => _ProdutsOverviweScrennState();
 }
 
-class _ProdutsOverviweScrennState extends State<ProdutsOverviweScrenn> {
+class _ProdutsOverviweScrennState extends State<ProdutsOverviewScrenn> {
   bool _showFavoriteOnly = false;
   bool _isLoading = true;
 

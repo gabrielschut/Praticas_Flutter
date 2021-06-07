@@ -25,15 +25,13 @@ class Product with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> toggleFavorite() async{
+  Future<void> toggleFavorite(String token, String userId) async{
     _toggleFavorite();
     try{
-      final url ='${Constants.BASE_API_URL}/products';
-      final response = await http.patch(
+      final url ='${Constants.BASE_API_URL}/userFavorites/$userId/$id.json?auth=$token';
+      final response = await http.put(
           url,
-          body: json.encode({
-            'IsFavorite' : isFavorite = !this.isFavorite,
-          })
+          body: json.encode({isFavorite})
       );
 
       if(response.statusCode >= 400){
@@ -52,6 +50,10 @@ class Product with ChangeNotifier{
 class Products with ChangeNotifier{
   final _baseUrl = '${Constants.BASE_API_URL}/products';
   List<Product> _items = [];
+  String _token;
+  String _userId;
+
+  Products([this._token, this._items = const [], this._userId]);
 
   List<Product> get items => [..._items];
 
@@ -61,13 +63,12 @@ class Products with ChangeNotifier{
 
   Future<void> addProduct(Product newProduct) async{
     final response = await
-    http.post("$_baseUrl.json",
+    http.post("$_baseUrl.json?auth=$_token",
     body: json.encode({
       'title' : newProduct.title,
       'price' : newProduct.price,
       'description' : newProduct.description,
       'imageUrl' : newProduct.imageUrl,
-      'isFavorite' : newProduct.isFavorite = false,
     }),
     );
         _items.add(Product(
@@ -82,20 +83,22 @@ class Products with ChangeNotifier{
   }
 
   Future<void> loadProducts() async {
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("$_baseUrl.json?auth=$_token");
     Map<String, dynamic> data= json.decode(response.body);
-
+    final favoriteResponse = await http.get("${Constants.BASE_API_URL}/userFavorites/$_userId.json?auth=$_token");
+    final favMap = jsonDecode(favoriteResponse.body);
     _items.clear();
 
     data.forEach((productId, productData) {
       if(data != null){
+        final isFavorite = favMap == null ? false : favMap[productId] ?? false;
         _items.add(Product(
             id: productId,
             title: productData['title'],
             description: productData['description'],
             price: productData['price'],
             imageUrl: productData['imageUrl'],
-            isFavorite: productData['isFavorite']
+            isFavorite: isFavorite,
         ));
         notifyListeners();
       }
@@ -111,7 +114,7 @@ class Products with ChangeNotifier{
 
     final index = _items.indexWhere((prod) => prod.id == product.id);
     if(index >=0 ){
-      await http.patch("$_baseUrl/${product.id}.json",
+      await http.patch("$_baseUrl/${product.id}.json?auth=$_token",
       body: jsonEncode({
         'title' : product.title,
         'price' : product.price,
@@ -129,7 +132,7 @@ class Products with ChangeNotifier{
     if(index >= 0){
       final product = _items[index];
 
-      final response = await http.delete("$_baseUrl/${product.id}.json");
+      final response = await http.delete("$_baseUrl/${product.id}.json?auth=$_token");
 
       if(response.statusCode > 400){
         _items.insert(index, product);
